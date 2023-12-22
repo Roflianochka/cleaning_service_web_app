@@ -1,12 +1,92 @@
-class ServiceReviewsController{
-    async create(req,res){
+const ApiError = require("../error/ApiError.js");
+const { ServiceReviews } = require("../models/models.js");
+const { Appointments } = require("../models/models.js");
+class ServiceReviewsController {
+  async create(req, res) {
+    try {
+      const { appointment_id, rating, review_text, review_date } = req.body;
 
+      const appointment = await Appointments.findByPk(appointment_id);
+      if (!appointment) {
+        return res.status(404).json({ message: "Appointment not found" });
+      }
+
+      const serviceReview = await ServiceReviews.create({
+        appointment_id,
+        rating,
+        review_text,
+        review_date,
+      });
+
+      return res.status(201).json(serviceReview);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        return res.status(err.status).json({ message: err.message });
+      } else {
+        return res.status(500).json({ message: err.message });
+      }
     }
-    async getAll(req,res){
-        
+  }
+  async getAll(req, res) {
+    try {
+      const serviceReviews = await ServiceReviews.findAll();
+      res.json(serviceReviews);
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
     }
-    async getOne(req,res){
-        
+  }
+
+  async getOne(req, res) {
+    const { id } = req.params;
+    try {
+      const serviceReview = await ServiceReviews.findByPk(id);
+      if (!serviceReview) {
+        return res.status(404).json({ message: "ServiceReview not found" });
+      }
+      res.json(serviceReview);
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
     }
+  }
+  async updateById(req, res) {
+    const { id } = req.params;
+    const { appointment_id, rating, review_text, review_date } = req.body;
+    try {
+      const serviceReview = await ServiceReviews.findByPk(id);
+      if (!serviceReview) {
+        return res.status(404).json({ message: "ServiceReview not found" });
+      }
+
+      const appointment = await Appointments.findByPk(appointment_id);
+      if (!appointment) {
+        return res.status(404).json({ message: "Appointment not found" });
+      }
+
+      await serviceReview.update({
+        appointment_id,
+        rating,
+        review_text,
+        review_date,
+      });
+
+      res.json(serviceReview);
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+  async deleteById(req, res) {
+    const { id } = req.params;
+    try {
+      const serviceReview = await ServiceReviews.findByPk(id);
+      if (!serviceReview) {
+        return res.status(404).json({ message: "ServiceReview not found" });
+      }
+
+      await serviceReview.destroy();
+      res.sendStatus(204);
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
 }
-module.exports = new ServiceReviewsController()
+module.exports = new ServiceReviewsController();

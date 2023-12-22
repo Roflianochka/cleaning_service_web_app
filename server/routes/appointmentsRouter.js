@@ -1,8 +1,11 @@
-const Router = require('express')
-const router = new Router()
+const Router = require("express");
+const router = new Router();
+const appointmentController = require("../controllers/appointmentController");
 
-router.post('/')
-router.get('/')
-router.get('/:id')
+router.post("/create", appointmentController.create);
+router.get("/getAll", appointmentController.getAll);
+router.get("/getById/:id", appointmentController.getOne);
+router.put("/updateById/:id", appointmentController.updateById);
+router.delete("/deleteById/:id", appointmentController.deleteById);
 
-module.exports = router
+module.exports = router;
