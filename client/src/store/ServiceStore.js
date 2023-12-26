@@ -10,6 +10,7 @@ export default class ServiceStore {
         description: "1111",
         price: 1,
         duration: 1,
+        img: "https://vitacleaning.ru/upload/medialibrary/fa6/fa6febf1f18e80738f68a09e800b3121.jpg",
       },
       {
         service_id: 2,
@@ -18,6 +19,7 @@ export default class ServiceStore {
         description: "22222",
         price: 2,
         duration: 2,
+        img: "https://storage01.tea.ru/medialibrary/070/07008345cecbe43dfae17bc13ff7b2c6/65c5b25c31d3e471542e523c0550dd36.jpg",
       },
       {
         service_id: 3,
@@ -26,6 +28,7 @@ export default class ServiceStore {
         description: "333333",
         price: 3,
         duration: 3,
+        img: "https://expert-cleaning.com/wp-content/uploads/2022/02/standartnaya.jpg",
       },
       {
         service_id: 4,
@@ -34,25 +37,37 @@ export default class ServiceStore {
         description: "4444444",
         price: 4,
         duration: 4,
-      },
-    ];
-    this._servicesCategories = [
-      {
-        service_category_id: 1,
-        category_name: "КатегорияУборка1",
-        category_description: "фффффф",
+        img: "https://www.anatomiyasna.ru/uploads/images/article_images/statya-7-pravil-uborki-v-detskoi-1.jpg",
       },
       {
-        service_category_id: 2,
-        category_name: "КатегорияУборка2",
-        category_description: "ыыыыыыы",
-      },
-      {
+        service_id: 5,
+        service_name: "Уборка4",
         service_category_id: 3,
-        category_name: "КатегорияУборка3",
-        category_description: "ввввввввв",
+        description: "4444444",
+        price: 4,
+        duration: 4,
+        img: "https://www.anatomiyasna.ru/uploads/images/article_images/statya-7-pravil-uborki-v-detskoi-1.jpg",
+      },
+      {
+        service_id: 6,
+        service_name: "Уборка4",
+        service_category_id: 3,
+        description: "4444444",
+        price: 4,
+        duration: 4,
+        img: "https://www.anatomiyasna.ru/uploads/images/article_images/statya-7-pravil-uborki-v-detskoi-1.jpg",
+      },
+      {
+        service_id: 7,
+        service_name: "Уборка4",
+        service_category_id: 3,
+        description: "4444444",
+        price: 4,
+        duration: 4,
+        img: "https://www.anatomiyasna.ru/uploads/images/article_images/statya-7-pravil-uborki-v-detskoi-1.jpg",
       },
     ];
+    this._servicesCategories = [];
     this._selectedCategory = {};
     makeAutoObservable(this);
   }
