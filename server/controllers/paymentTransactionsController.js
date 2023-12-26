@@ -1,11 +1,6 @@
-class EmployeeController{
-    async create(req,res){
-    }
-    async getAll(req,res){
-        
-    }
-    async getOne(req,res){
-        
-    }
+class EmployeeController {
+  async create(req, res) {}
+  async getAll(req, res) {}
+  async getOne(req, res) {}
 }
-module.exports = new EmployeeController()
+module.exports = new EmployeeController();

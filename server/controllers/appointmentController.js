@@ -1,17 +1,21 @@
 const ApiError = require("../error/ApiError.js");
 const { Appointments } = require("../models/models.js");
+
 class AppointmentController {
   async create(req, res) {
     try {
-      const { user_id, service_id, employee_id, appointment_datetime, status } =
-        req.body;
+      const { user_id, service_id, employee_id, appointment_datetime } = req.body;
+
+      let status = "PENDING"
+
       const appointment = await Appointments.create({
-        user_id,
-        service_id,
-        employee_id,
         appointment_datetime,
-        status,
+        employee_id,
+        service_id,
+        user_id,
+        status
       });
+
       return res.json(appointment);
     } catch (err) {
       if (err.status === 400) {

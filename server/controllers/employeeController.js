@@ -1,7 +1,7 @@
-const { Employees } = require('../models/models'); 
+const { Employees } = require("../models/models");
 const ApiError = require("../error/ApiError");
 class EmployeeController {
-  async getAllEmployees(req,res, next) {
+  async getAllEmployees(req, res, next) {
     try {
       const employees = await Employees.findAll();
       res.json(employees);
@@ -15,16 +15,25 @@ class EmployeeController {
     try {
       const employee = await Employees.findByPk(id);
       if (!employee) {
-        return next(ApiError.notFound('Employee not found'));
+        return next(ApiError.notFound("Employee not found"));
       }
       res.json(employee);
     } catch (error) {
       next(ApiError.internal(error.message));
-    }   
+    }
   }
 
   async createEmployee(req, res, next) {
-    const { first_name, last_name, email, phone, address, hire_date, job_title, hourly_rate } = req.body;
+    const {
+      first_name,
+      last_name,
+      email,
+      phone,
+      address,
+      hire_date,
+      job_title,
+      hourly_rate,
+    } = req.body;
     try {
       const newEmployee = await Employees.create({
         first_name,
@@ -44,11 +53,20 @@ class EmployeeController {
 
   async updateEmployee(req, res, next) {
     const { id } = req.params;
-    const { first_name, last_name, email, phone, address, hire_date, job_title, hourly_rate } = req.body;
+    const {
+      first_name,
+      last_name,
+      email,
+      phone,
+      address,
+      hire_date,
+      job_title,
+      hourly_rate,
+    } = req.body;
     try {
       const employee = await Employees.findByPk(id);
       if (!employee) {
-        return next(ApiError.notFound('Employee not found'));
+        return next(ApiError.notFound("Employee not found"));
       }
       await employee.update({
         first_name,
@@ -71,7 +89,7 @@ class EmployeeController {
     try {
       const employee = await Employees.findByPk(id);
       if (!employee) {
-        return next(ApiError.notFound('Employee not found'));
+        return next(ApiError.notFound("Employee not found"));
       }
       await employee.destroy();
       res.sendStatus(204);

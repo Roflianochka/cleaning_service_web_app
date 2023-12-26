@@ -1,5 +1,7 @@
-const { Services } = require("../models/models");
+const { Services, ServiceCategories, ServiceReviews } = require("../models/models");
 const ApiError = require("../error/ApiError");
+const uuid = require('uuid')
+const path = require('path')
 
 class ServiceController {
   async create(req, res) {
@@ -11,11 +13,17 @@ class ServiceController {
         price,
         duration,
       } = req.body;
+
+      const { image } = req.files
+      let fileName = uuid.v4() + ".jpg"
+      image.mv(path.resolve(__dirname, '..', 'static', fileName))
+
       const service = await Services.create({
         service_name,
         service_category_id,
         description,
         price,
+        image: fileName,
         duration,
       });
       return res.json(service);
@@ -29,24 +37,45 @@ class ServiceController {
   }
   async getAll(req, res) {
     try {
-      const services = await Services.findAll();
+      const services = await Services.findAll({
+        include: ServiceCategories
+      });
       return res.json(services);
     } catch (err) {
       return res.status(500).json({ message: 'Internal Server Error' });
     }
   }
+
   async getById(req, res) {
-      const { id } = req.params;
-      try {
-        const service = await Services.findByPk(id);
-        if (!service) {
-          return next(ApiError.notFound('Service not found'));
-        }
-        res.json(service);
-      } catch (error) {
-        next(ApiError.internal(error.message));
+    const { id } = req.params;
+    try {
+      const service = await Services.findByPk(id);
+      if (!service) {
+        return next(ApiError.notFound('Service not found'));
       }
+      res.json(service);
+    } catch (error) {
+      next(ApiError.internal(error.message));
+    }
   }
+
+  async getReviews(req, res, next) {
+    const { id } = req.params;
+    try {
+      const service = await Services.findByPk(id, {
+        include: ServiceReviews,
+      });
+  
+      if (!service) {
+        return next(ApiError.notFound('Service not found'));
+      }
+  
+      res.json(service);
+    } catch (error) {
+      next(ApiError.internal(error.message));
+    }
+  }
+
   async updateById(req, res) {
     try {
       const { id } = req.params;

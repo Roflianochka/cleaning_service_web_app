@@ -40,8 +40,9 @@ class ServiceReviewsController {
     const { id } = req.params;
     try {
       const serviceReview = await ServiceReviews.findByPk(id);
+
       if (!serviceReview) {
-        return res.status(404).json({ message: "ServiceReview not found" });
+        return res.status(404).json({ message: "Service Review not found" });
       }
       res.json(serviceReview);
     } catch (error) {
