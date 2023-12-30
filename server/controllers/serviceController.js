@@ -1,4 +1,4 @@
-const { Services, ServiceCategories, ServiceReviews } = require("../models/models");
+const { Services, ServiceCategories, ServiceReviews, User, Appointments } = require("../models/models");
 const ApiError = require("../error/ApiError");
 const uuid = require('uuid')
 const path = require('path')
@@ -12,6 +12,7 @@ class ServiceController {
         description,
         price,
         duration,
+        is_window
       } = req.body;
 
       const { image } = req.files
@@ -25,6 +26,7 @@ class ServiceController {
         price,
         image: fileName,
         duration,
+        is_window
       });
       return res.json(service);
     } catch (err) {
@@ -46,7 +48,41 @@ class ServiceController {
     }
   }
 
-  async getById(req, res) {
+  async canReviewService(req, res) {
+    try {
+      const { userId, serviceId } = req.body
+
+      const appointmentExists = await Appointments.findOne({
+        where: {
+          user_id: userId,
+          service_id: serviceId,
+          status: "COMPLETED"
+        },
+      });
+
+      if (!appointmentExists) {
+        return res.status(403).json({ error: 'User is not eligible to review this service' });
+      }
+
+      const hasReviewed = await ServiceReviews.findOne({
+        where: {
+          user_id: userId,
+          service_id: serviceId,
+        },
+      });
+
+      if (hasReviewed) {
+        return res.status(403).json({ error: 'User has already reviewed this service' });
+      }
+
+      res.status(200).json({ canReview: true });
+    } catch (error) {
+      console.error('Error checking if user can review service:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async getById(req, res, next) {
     const { id } = req.params;
     try {
       const service = await Services.findByPk(id);
@@ -63,13 +99,23 @@ class ServiceController {
     const { id } = req.params;
     try {
       const service = await Services.findByPk(id, {
-        include: ServiceReviews,
+        include: [
+          {
+            model: ServiceReviews,
+            include: [
+              {
+                model: User,
+                attributes: ['first_name', 'last_name'],
+              },
+            ],
+          },
+        ],
       });
-  
+
       if (!service) {
         return next(ApiError.notFound('Service not found'));
       }
-  
+
       res.json(service);
     } catch (error) {
       next(ApiError.internal(error.message));
@@ -112,6 +158,7 @@ class ServiceController {
       }
     }
   }
+
   async deleteById(req, res) {
     try {
       const { id } = req.params;
