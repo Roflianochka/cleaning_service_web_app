@@ -1,15 +1,26 @@
 import AdminPage from "./pages/AdminPage";
 import Auth from "./pages/Auth";
-import Basket from "./pages/Basket";
+import ServicesPage from "./pages/ServicesPage";
 import ServicePage from "./pages/ServicePage";
-import Shop from "./pages/Shop";
+import MainPage from "./pages/MainPage";
+import UserProfile from "./pages/UserProfile";
+import EmployeesPage from "./pages/EmployeesPage";
+import UserCompletedServicesPage from "./pages/UserCompletedServicesPage";
+import AppointmentsPage from "./pages/AppointmentsPage";
+import FaqPage from "./pages/FAQPage";
+
 import {
-  BASKET_ROUTE,
   REGISTRATION_ROUTE,
   SERVICE_ROUTE,
   ADMIN_ROUTE,
-  SHOP_ROUTE,
+  MAIN_ROUTE,
   LOGIN_ROUTE,
+  USER_ROUTE,
+  SERVICES_ROUTE,
+  EMPLOYEES_ROUTE,
+  USER_COMPLETED_SERVICES_ROUTE,
+  APPOINTMENTS_ROUTE,
+  FAQ_ROUTE
 } from "./utils/consts";
 
 export const authRoutes = [
@@ -18,14 +29,30 @@ export const authRoutes = [
     Component: AdminPage,
   },
   {
-    path: BASKET_ROUTE,
-    Component: Basket,
+    path: EMPLOYEES_ROUTE,
+    Component: EmployeesPage,
+  },
+  {
+    path: USER_COMPLETED_SERVICES_ROUTE,
+    Component: UserCompletedServicesPage,
+  },
+  {
+    path: USER_ROUTE,
+    Component: UserProfile,
+  },
+  {
+    path: APPOINTMENTS_ROUTE,
+    Component: AppointmentsPage,
   },
 ];
 export const publicRoutes = [
   {
-    path: SHOP_ROUTE,
-    Component: Shop,
+    path: MAIN_ROUTE,
+    Component: MainPage,
+  },
+  {
+    path: SERVICES_ROUTE,
+    Component: ServicesPage,
   },
   {
     path: REGISTRATION_ROUTE,
@@ -38,5 +65,10 @@ export const publicRoutes = [
   {
     path: SERVICE_ROUTE + "/:id",
     Component: ServicePage,
+  },
+
+  {
+    path: FAQ_ROUTE,
+    Component: FaqPage,
   },
 ];
