@@ -3,7 +3,7 @@ import Container from "react-bootstrap/esm/Container";
 import { Button, Form, Row } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { LOGIN_ROUTE, REGISTRATION_ROUTE, SHOP_ROUTE } from "../utils/consts";
+import { LOGIN_ROUTE, REGISTRATION_ROUTE, MAIN_ROUTE } from "../utils/consts";
 import { login, registration } from "../components/http/userApi";
 import { observer } from "mobx-react-lite";
 import { Context } from "../index";
@@ -13,8 +13,10 @@ const Auth = observer(() => {
   const location = useLocation();
   const navigate = useNavigate();
   const isLogin = location.pathname === LOGIN_ROUTE;
-  const [email, serEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   const click = async () => {
     try {
@@ -22,11 +24,12 @@ const Auth = observer(() => {
       if (isLogin) {
         data = await login(email, password);
       } else {
-        data = await registration(email, password);
+        data = await registration(email, password, firstName, lastName);
       }
+      localStorage.setItem('isAuth', 'true');
       user.setUser(data.user);
       user.setIsAuth(true);
-      navigate(SHOP_ROUTE);
+      navigate(MAIN_ROUTE);
     } catch (error) {
       alert(error.message);
     }
@@ -39,14 +42,34 @@ const Auth = observer(() => {
       <Card style={{ width: 600 }} className="p-5">
         <h2 className="m-lg-auto">{isLogin ? "Авторизация" : "Регистрация"}</h2>
         <Form className="d-flex flex-column">
+          {!isLogin && (
+            <>
+              <Form.Control
+                className="mt-3"
+                id="first_name"
+                placeholder="Введите имя..."
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+              <Form.Control
+                className="mt-3"
+                id="last_name"
+                placeholder="Введите фамилию..."
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </>
+          )}
           <Form.Control
             className="mt-3"
+            id="email"
             placeholder="Введите email..."
             value={email}
-            onChange={(e) => serEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <Form.Control
             className="mt-3"
+            id="password"
             placeholder="Введите пароль..."
             value={password}
             onChange={(e) => setPassword(e.target.value)}
