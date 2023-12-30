@@ -1,7 +1,7 @@
 const ApiError = require("../error/ApiError.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { User } = require("../models/models");
+const { User, Appointments, Services } = require("../models/models");
 const generateJwt = (id, role) => {
   return jwt.sign(
     {
@@ -40,7 +40,7 @@ class UserController {
         last_name: lastName,
         email: email,
       });
-      const token = generateJwt(user.id, user.role);
+      const token = generateJwt(user.user_id, user.role);
 
       // res.status(201).json({ id: user.id, role: user.role, clientId: user.clientId });
       res.json({ token });
@@ -88,8 +88,78 @@ class UserController {
     }
   }
   async check(req, res, next) {
-    const token = generateJwt(req.user.id, req.user.role);
+    const token = generateJwt(req.user.userId, req.user.role);
     return res.json({ token });
   }
+
+  async getInfo(req, res) {
+    try {
+      const { id } = req.params;
+
+      const user = await User.findByPk(id, {
+        attributes: ['first_name', 'last_name', 'email', 'role'],
+      });
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      return res.status(200).json({ user });
+    } catch (error) {
+      console.error('Error fetching user information:', error);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+  }
+
+  async getAllUserAppointments(req, res, next) {
+    try {
+      const userId = req.params.userId;
+
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      const userAppointments = await Appointments.findAll({
+        where: { user_id: userId },
+        include: [
+          {
+            model: Services
+          },
+        ],
+      });
+
+      return res.status(200).json(userAppointments);
+    } catch (error) {
+      console.error('Error fetching user appointments:', error);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+  }
+
+  async cancelAppointment(req, res, next) {
+    try {
+      const { appointmentId } = req.params;
+
+      const appointment = await Appointments.findByPk(appointmentId);
+
+      if (!appointment) {
+        return res.status(404).json({ message: 'Appointment not found' });
+      }
+
+      if (appointment.status !== 'CANCELED') {
+        await appointment.update({ status: 'CANCELED' });
+
+
+        return res.status(200).json({ message: 'Appointment canceled successfully' });
+      } else {
+        await appointment.update({ status: 'PAYMENT_NEEDED' });
+      }
+      return res.json("Status changed");
+    } catch (error) {
+      console.error('Error canceling appointment:', error);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+  }
 }
+
 module.exports = new UserController();
