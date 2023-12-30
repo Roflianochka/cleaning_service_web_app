@@ -1,18 +1,18 @@
 const ApiError = require("../error/ApiError.js");
-const { ServiceReviews } = require("../models/models.js");
-const { Appointments } = require("../models/models.js");
+const { Appointments, Services, ServiceReviews } = require("../models/models.js");
 class ServiceReviewsController {
   async create(req, res) {
     try {
-      const { appointment_id, rating, review_text, review_date } = req.body;
+      const { service_id, userId, rating, review_text, review_date } = req.body;
 
-      const appointment = await Appointments.findByPk(appointment_id);
-      if (!appointment) {
-        return res.status(404).json({ message: "Appointment not found" });
+      const service = await Services.findByPk(service_id);
+      if (!service) {
+        return res.status(404).json({ message: "Service not found" });
       }
 
       const serviceReview = await ServiceReviews.create({
-        appointment_id,
+        service_id,
+        user_id: userId,
         rating,
         review_text,
         review_date,
@@ -23,10 +23,12 @@ class ServiceReviewsController {
       if (err instanceof ApiError) {
         return res.status(err.status).json({ message: err.message });
       } else {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ message: err });
       }
     }
   }
+
+
   async getAll(req, res) {
     try {
       const serviceReviews = await ServiceReviews.findAll();
@@ -49,6 +51,7 @@ class ServiceReviewsController {
       res.status(500).json({ message: "Internal Server Error" });
     }
   }
+  
   async updateById(req, res) {
     const { id } = req.params;
     const { appointment_id, rating, review_text, review_date } = req.body;
