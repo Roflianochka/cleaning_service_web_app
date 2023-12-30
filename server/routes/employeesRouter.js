@@ -1,12 +1,12 @@
 const Router = require('express')
 const router = new Router()
-const employeeControllerController = require("../controllers/employeeController")
+const employeeController = require("../controllers/employeeController")
 
-router.post('/create',employeeControllerController.createEmployee)
-router.get('/getAll', employeeControllerController.getAllEmployees)
-router.get('/getById/:id', employeeControllerController.getEmployeeById)
-router.put('/updateById/:id',employeeControllerController.updateEmployee)
-router.delete('/deleteById/:id',employeeControllerController.deleteEmployee)
-
+router.post('/create', employeeController.createEmployee)
+router.get('/getAll', employeeController.getAllEmployees)
+router.get('/getAllAvailable', employeeController.getAllAvailableEmployees)
+router.get('/getById/:id', employeeController.getEmployeeById)
+router.put('/updateById/:id', employeeController.updateEmployee)
+router.delete('/deleteById/:id', employeeController.deleteEmployee)
 
 module.exports = router

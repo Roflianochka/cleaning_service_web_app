@@ -1,10 +1,29 @@
-const { Employees } = require("../models/models");
+const { Employees, ServiceAssignment } = require("../models/models");
 const ApiError = require("../error/ApiError");
+
 class EmployeeController {
   async getAllEmployees(req, res, next) {
     try {
       const employees = await Employees.findAll();
       res.json(employees);
+    } catch (error) {
+      next(ApiError.internal(error.message));
+    }
+  }
+
+  async getAllAvailableEmployees(req, res, next) {
+    try {
+      const availableEmployees = await Employees.findAll({
+        where: {
+          employee_id: {
+            [Employees.sequelize.Sequelize.Op.notIn]: Employees.sequelize.literal(
+              '(SELECT employee_id FROM "ServiceAssignments")'
+            ),
+          },
+        },
+      });
+
+      res.json(availableEmployees);
     } catch (error) {
       next(ApiError.internal(error.message));
     }
@@ -56,11 +75,7 @@ class EmployeeController {
     const {
       first_name,
       last_name,
-      email,
       phone,
-      address,
-      hire_date,
-      job_title,
       hourly_rate,
     } = req.body;
     try {
@@ -71,11 +86,7 @@ class EmployeeController {
       await employee.update({
         first_name,
         last_name,
-        email,
         phone,
-        address,
-        hire_date,
-        job_title,
         hourly_rate,
       });
       res.json(employee);
